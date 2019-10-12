@@ -1,7 +1,6 @@
 package com.hcl.hackathon;
 
 import java.net.URISyntaxException;
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
@@ -10,6 +9,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
@@ -20,10 +20,10 @@ public class OpenBankController {
 	@Autowired
 	RestTemplate restTemplate;
 	
-	String token;
+	private String token;
 	
 	@GetMapping("/token")
-	public String getUser() throws URISyntaxException {
+	public String getJwtToken() throws URISyntaxException {
 		if(token == null) {
 			JsonToken jsonToken = getToken();
 			token = jsonToken.getToken();
@@ -32,11 +32,11 @@ public class OpenBankController {
 	}
 	
 	@GetMapping("/user")
-	public String getCurrentUser() throws URISyntaxException {
-		if(token == null) {
-			JsonToken jsonToken = getToken();
-			token = jsonToken.getToken();
-		}
+	public String getCurrentUser(@RequestAttribute String token) throws URISyntaxException {
+//		if(token == null) {
+//			JsonToken jsonToken = getToken();
+//			token = jsonToken.getToken();
+//		}
 		String url = "https://apisandbox.openbankproject.com/obp/v4.0.0/users/current";
 		
 		HttpHeaders httpHeaders = new HttpHeaders();
@@ -48,11 +48,12 @@ public class OpenBankController {
 	}
 	
 	@PostMapping(value = "/user", consumes = {"application/json"})
-	public void createUser(@RequestBody User requestBody) throws URISyntaxException {
-		if(token == null) {
-			JsonToken jsonToken = getToken();
-			token = jsonToken.getToken();
-		}
+	public void createUser(@RequestBody User requestBody,
+			@RequestAttribute String token) throws URISyntaxException {
+//		if(token == null) {
+//			JsonToken jsonToken = getToken();
+//			token = jsonToken.getToken();
+//		}
 		String url = "https://apisandbox.openbankproject.com/obp/v4.0.0/users";
 		HttpHeaders httpHeaders = new HttpHeaders();
 		httpHeaders.add("Authorization", "DirectLogin token="+token);
