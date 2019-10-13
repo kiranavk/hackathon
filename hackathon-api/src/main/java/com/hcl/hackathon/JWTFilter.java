@@ -1,6 +1,7 @@
 package com.hcl.hackathon;
 
 import java.io.IOException;
+import java.net.URLDecoder;
 import java.util.Arrays;
 import java.util.List;
 
@@ -21,7 +22,8 @@ public class JWTFilter extends OncePerRequestFilter {
 
 	private Logger logger = LoggerFactory.getLogger(JWTFilter.class);
 	
-	private final List<String> excludePatterns = Arrays.asList("/token");
+	private final List<String> excludePatterns = Arrays.asList("/token", "/webjars/**", "/images/**", "/swagger-ui.html", "/configuration/**",
+																	"/swagger-resources/**", "/v2/api-docs");
 	PathMatcher pathMatcher = new AntPathMatcher();
 	
 	@Override
@@ -29,9 +31,10 @@ public class JWTFilter extends OncePerRequestFilter {
 			throws ServletException, IOException {
 		
 		String prefix = "Bearer ";
-		String header = request.getHeader("Authorization");
+		String encodedHeader = request.getHeader("Authorization");
+		String header = URLDecoder.decode(encodedHeader, "UTF-8");
 		if(header == null || !header.startsWith("Bearer ")) {
-			throw new AuthException("Authorization is not valid");
+			throw new AuthException("Authorization is not valid: "+request.getRequestURI());
 		}
 		final String token = header.substring(prefix.length());
 		logger.debug("Token: "+token);
@@ -46,7 +49,7 @@ public class JWTFilter extends OncePerRequestFilter {
 	
 	@Override
 	protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
-		return excludePatterns.stream().anyMatch((url) -> pathMatcher.match(url, request.getServletPath()));
+		return excludePatterns.stream().anyMatch((url) -> pathMatcher.match(url, request.getRequestURI()));
 	}
 
 }
