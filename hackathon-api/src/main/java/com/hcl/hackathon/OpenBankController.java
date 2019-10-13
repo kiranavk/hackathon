@@ -22,6 +22,11 @@ public class OpenBankController {
 	
 	private String token;
 	
+	@GetMapping("/")
+	public String home() {
+		return "<h1>Welcome to Hackathon.</h1><br><br><h2>You will have to fulfill a usecase with a team and you will be rewarded onsite opportunity if you do well. :-) </h2>";
+	}
+	
 	@GetMapping("/token")
 	public String getJwtToken() throws URISyntaxException {
 		if(token == null) {
@@ -33,10 +38,6 @@ public class OpenBankController {
 	
 	@GetMapping("/user")
 	public String getCurrentUser(@RequestAttribute String token) throws URISyntaxException {
-//		if(token == null) {
-//			JsonToken jsonToken = getToken();
-//			token = jsonToken.getToken();
-//		}
 		String url = "https://apisandbox.openbankproject.com/obp/v4.0.0/users/current";
 		
 		HttpHeaders httpHeaders = new HttpHeaders();
@@ -48,30 +49,23 @@ public class OpenBankController {
 	}
 	
 	@PostMapping(value = "/user", consumes = {"application/json"})
-	public void createUser(@RequestBody User requestBody,
+	public ResponseEntity<String> createUser(@RequestBody User requestBody,
 			@RequestAttribute String token) throws URISyntaxException {
-//		if(token == null) {
-//			JsonToken jsonToken = getToken();
-//			token = jsonToken.getToken();
-//		}
 		String url = "https://apisandbox.openbankproject.com/obp/v4.0.0/users";
 		HttpHeaders httpHeaders = new HttpHeaders();
 		httpHeaders.add("Authorization", "DirectLogin token="+token);
 		
 		HttpEntity<User> entity = new HttpEntity<User>(requestBody, httpHeaders);
 		ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.POST, entity, String.class);
-		System.out.println("Create user resp: "+response);
+		return response;
 	}
 
 	public JsonToken getToken() throws URISyntaxException {
-//		RestTemplate restTemplate = new RestTemplate();
 		String url = "https://apisandbox.openbankproject.com/my/logins/direct";
-//		URI uri = new URI(url);
 		
 		HttpHeaders httpHeaders = new HttpHeaders();
 		httpHeaders.add("Authorization", "DirectLogin username=avkkiran,password=ExpImp123$,consumer_key=2vwzqknzt1yozrzpm5fe31gku3wvnx1aattenaix");
 		
-//		restTemplate.getForEntity(uri, String.class);
 		HttpEntity<String> entity = new HttpEntity<String>(httpHeaders);
 		ResponseEntity<JsonToken> response = restTemplate.exchange(url, HttpMethod.POST, entity, JsonToken.class);
 		return response.getBody();

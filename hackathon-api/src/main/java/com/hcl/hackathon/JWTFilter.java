@@ -22,7 +22,7 @@ public class JWTFilter extends OncePerRequestFilter {
 
 	private Logger logger = LoggerFactory.getLogger(JWTFilter.class);
 	
-	private final List<String> excludePatterns = Arrays.asList("/token", "/webjars/**", "/images/**", "/swagger-ui.html", "/configuration/**",
+	private final List<String> excludePatterns = Arrays.asList("/", "/token", "/webjars/**", "/images/**", "/swagger-ui.html", "/configuration/**",
 																	"/swagger-resources/**", "/v2/api-docs");
 	PathMatcher pathMatcher = new AntPathMatcher();
 	
@@ -32,7 +32,10 @@ public class JWTFilter extends OncePerRequestFilter {
 		
 		String prefix = "Bearer ";
 		String encodedHeader = request.getHeader("Authorization");
-		String header = URLDecoder.decode(encodedHeader, "UTF-8");
+		String header = null;
+		if(encodedHeader != null) {
+			header = URLDecoder.decode(encodedHeader, "UTF-8");
+		}
 		if(header == null || !header.startsWith("Bearer ")) {
 			throw new AuthException("Authorization is not valid: "+request.getRequestURI());
 		}
