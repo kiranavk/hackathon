@@ -22,7 +22,7 @@ public class JWTFilter extends OncePerRequestFilter {
 
 	private Logger logger = LoggerFactory.getLogger(JWTFilter.class);
 	
-	private final List<String> excludePatterns = Arrays.asList("/", "/token", "/webjars/**", "/images/**", "/swagger-ui.html", "/configuration/**",
+	private final List<String> excludePatterns = Arrays.asList("/", "/favicon.ico", "/token", "/webjars/**", "/images/**", "/swagger-ui.html", "/configuration/**",
 																	"/swagger-resources/**", "/v2/api-docs");
 	PathMatcher pathMatcher = new AntPathMatcher();
 	
